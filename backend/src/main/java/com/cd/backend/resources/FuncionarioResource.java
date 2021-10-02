@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.cd.backend.domain.Funcionario;
+import com.cd.backend.dto.FuncionarioDTO;
 import com.cd.backend.dto.insert.FuncionarioNewDTO;
 import com.cd.backend.services.FuncionarioService;
 
@@ -49,7 +50,7 @@ public class FuncionarioResource {
 	}
 	
 	@RequestMapping(value="/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Void> update(@PathVariable Integer id, @Valid @RequestBody Funcionario obj){
+	public ResponseEntity<Void> update(@PathVariable Integer id, @RequestBody Funcionario obj){
 		obj = service.update(obj);
 		return ResponseEntity.noContent().build();
 	}
@@ -61,13 +62,14 @@ public class FuncionarioResource {
 	}
 	
 	@RequestMapping(value="/page", method=RequestMethod.GET)
-	public ResponseEntity<Page<Funcionario>> findPage(
+	public ResponseEntity<Page<FuncionarioDTO>> findPage(
 			@RequestParam(value="page", defaultValue = "0")Integer page, 
 			@RequestParam(value="linesPerPage", defaultValue = "24")Integer linesPerPage, 
 			@RequestParam(value="orderBy", defaultValue = "nome")String orderBy, 
 			@RequestParam(value="direction", defaultValue = "ASC")String direction) {
 		Page<Funcionario> list = service.findPage(page, linesPerPage, orderBy, direction);
-		return ResponseEntity.ok().body(list);
+		Page<FuncionarioDTO> listDto = list.map(obj -> new FuncionarioDTO(obj));
+		return ResponseEntity.ok().body(listDto);
 	}
 	
 }
